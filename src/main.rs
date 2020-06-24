@@ -12,6 +12,14 @@ fn main() {
     loop {}
 }
 
+fn turn_on() {
+    send_hook("pc-on");
+}
+
+fn turn_off() {
+    send_hook("pc-off");
+}
+
 fn send_hook(endpoint: &str) {
     let client = reqwest::blocking::Client::new();
 
@@ -30,12 +38,4 @@ fn send_hook(endpoint: &str) {
             println!("Error sending hook to endpoint {}: {:?}", endpoint, e);
         }
     }
-}
-
-fn turn_on() {
-    send_hook("pc-on");
-}
-
-fn turn_off() {
-    send_hook("pc-off");
 }
