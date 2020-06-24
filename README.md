@@ -48,3 +48,24 @@ Open your `~/.bash_logout`, and add:
 ```bash
 killall -s SIGINT ha-events || true
 ```
+
+## Only run with a specific monitor attached
+
+If you only want to run `ha-events` when "docked" (e.g. by detecting if a specific monitor is attached), first, find
+where the EDID file is, for example:
+
+```bash
+$ find /sys -name edid
+/sys/devices/pci0000:00/0000:00:02.0/drm/card0/card0-HDMI-A-1/edid
+/sys/devices/pci0000:00/0000:00:02.0/drm/card0/card0-HDMI-A-2/edid
+/sys/devices/pci0000:00/0000:00:02.0/drm/card0/card0-VGA-1/edid
+/sys/devices/pci0000:00/0000:00:02.0/drm/card0/card0-eDP-1/edid
+/sys/devices/pci0000:00/0000:00:02.0/drm/card0/card0-DP-1/edid
+```
+
+I want to detect a "Dell ABC123" monitor on DP-1, so I provide the `EDID_FILE_PATH` and `EXPECTED_MONITOR_ATTACHED`
+environment variables to `ha-events` too:
+
+```bash
+HA_WEBHOOK_BASE_URL=http://your-ha-instance/api/webhook/ EDID_FILE_PATH=/sys/devices/pci0000:00/0000:00:02.0/drm/card0/card0-DP-1/edid EXPECTED_MONITOR_ATTACHED="DELL ABC123" /path/to/ha-events/target/debug/ha-events 
+```
