@@ -28,6 +28,7 @@ pub fn watch_for_screen_lock_unlock() {
 
     // Start matching
     conn.add_match(rule, |_: (), _, msg| {
+        info!("dbus message: {:?}", msg);
         let mut iter = msg.iter_init();
         if iter.next() {
             let z: HashMap<String, Variant<Box<dyn RefArg>>> = iter.get().unwrap();
