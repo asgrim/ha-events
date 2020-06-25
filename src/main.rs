@@ -20,7 +20,8 @@ fn main() {
     ctrl_c::set_handler();
     ha_webhook::turn_on();
     dbus_monitor::watch_for_screen_lock_unlock();
-    ha_webhook::turn_off();
 
-    info!("--FIN--")
+    // Theoretically, we never get here since ctrl_c handles termination, but just in case...
+    ha_webhook::turn_off();
+    info!("--FIN--");
 }
