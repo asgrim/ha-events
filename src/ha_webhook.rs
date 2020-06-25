@@ -28,10 +28,10 @@ fn send_webhook_to_ha(webhook_id: &str) {
 
     match client.post(&full_url).send() {
         Ok(_) => {
-            println!("Send hook to {}", full_url);
+            info!("Send hook to {}", full_url);
         }
         Err(e) => {
-            println!("Error sending hook to endpoint {}: {:?}", full_url, e);
+            error!("Error sending hook to endpoint {}: {:?}", full_url, e);
         }
     }
 }

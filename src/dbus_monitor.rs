@@ -10,8 +10,14 @@ pub fn watch_for_screen_lock_unlock() {
         .stdout(Stdio::piped())
         .spawn()
     {
-        Err(why) => panic!("could not spawn dbus-monitor: {}", why),
-        Ok(process) => process,
+        Err(why) => {
+            error!("Could not spawn dbus-monitor process: {}", why);
+            panic!("could not spawn dbus-monitor: {}", why);
+        },
+        Ok(process) => {
+            info!("Watching dbus-monitor.");
+            process
+        },
     };
 
     let stdout = process.stdout.unwrap();

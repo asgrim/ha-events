@@ -17,17 +17,20 @@ pub fn is_monitor_attached() -> bool {
 
     // If the environment variables are not set, assume we're not checking for monitor-attached
     if edid_file_path.eq("") || expected_monitor_name.eq("") {
+        info!("EDID_FILE_PATH or EXPECTED_MONITOR_ATTACHED environment variables not set: assuming we are docked");
         return true;
     }
 
     let edid_bytes = read_file_as_byte_vec(edid_file_path.as_str());
     if edid_bytes.len() == 0 {
+        warn!("EDID_FILE_PATH did not exist or was an empty file");
         return false;
     }
     let edid_descriptors = edid::parse(edid_bytes.as_slice()).unwrap().1.descriptors;
     // Unsure about what ProductName is? Uncomment this, look for the `ProductName` enumerator...
     // println!("{:#?}", edid_descriptors);
     if get_display_name_from_edid_vector(edid_descriptors).ne(expected_monitor_name.as_str()) {
+        warn!("Could not extract ProductName enumerator from EDID file: {}", edid_file_path);
         return false;
     }
     true
