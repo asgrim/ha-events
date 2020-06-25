@@ -1,18 +1,18 @@
 use edid::Descriptor;
+use std::env;
 use std::fs::File;
 use std::io::Read;
-use std::env;
 
 pub fn is_monitor_attached() -> bool {
     // Use `find /sys -name edid` to find this...
     let edid_file_path = match env::var("EDID_FILE_PATH") {
         Ok(t) => t,
-        Err(_) => String::from("")
+        Err(_) => String::from(""),
     };
     // Check the EDID - should be the `ProductName` - uncomment the println to dump the EDID values
     let expected_monitor_name = match env::var("EXPECTED_MONITOR_ATTACHED") {
         Ok(t) => t,
-        Err(_) => String::from("")
+        Err(_) => String::from(""),
     };
 
     // If the environment variables are not set, assume we're not checking for monitor-attached
@@ -30,7 +30,10 @@ pub fn is_monitor_attached() -> bool {
     // Unsure about what ProductName is? Uncomment this, look for the `ProductName` enumerator...
     // println!("{:#?}", edid_descriptors);
     if get_display_name_from_edid_vector(edid_descriptors).ne(expected_monitor_name.as_str()) {
-        warn!("Could not extract ProductName enumerator from EDID file: {}", edid_file_path);
+        warn!(
+            "Could not extract ProductName enumerator from EDID file: {}",
+            edid_file_path
+        );
         return false;
     }
     true

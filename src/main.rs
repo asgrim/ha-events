@@ -1,8 +1,8 @@
-mod logging;
 mod ctrl_c;
 mod dbus_monitor;
 mod docking_check;
 mod ha_webhook;
+mod logging;
 
 #[macro_use]
 extern crate log;

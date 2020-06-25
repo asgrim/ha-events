@@ -1,11 +1,11 @@
 use crate::ha_webhook;
+use dbus::arg::{RefArg, Variant};
 use dbus::blocking::Connection;
-use std::time::Duration;
 use dbus::message::MatchRule;
 use dbus::MessageType;
-use std::thread;
-use dbus::arg::{Variant, RefArg};
 use std::collections::HashMap;
+use std::thread;
+use std::time::Duration;
 
 pub fn watch_for_screen_lock_unlock() {
     let conn = loop {
@@ -49,8 +49,11 @@ pub fn watch_for_screen_lock_unlock() {
             };
         }
         true
-    }).expect("add_match failed");
+    })
+    .expect("add_match failed");
 
     info!("Connected to dbus.");
-    loop { conn.process(Duration::from_millis(1000)).unwrap(); };
+    loop {
+        conn.process(Duration::from_millis(1000)).unwrap();
+    }
 }
