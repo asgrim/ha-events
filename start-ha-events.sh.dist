@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -xeuo pipefail
+
+cd "$(dirname "$0")"
+
+# Required; you must set your HA base URL here, for example:
+export HA_WEBHOOK_BASE_URL=http://pi:8123/api/webhook/
+
+# Optionally, you can make ha-events only run when "docked" (i.e. plugged into a specific monitor)
+# Uncomment and populate both EDID_FILE_PATH and EXPECTED_MONITOR_ATTACHED exports for this to work!
+
+# Find the `EDID_FILE_PATH` using `find /sys -name edid` and pick the right port you want
+# export EDID_FILE_PATH=/sys/devices/pci0000:00/0000:00:02.0/drm/card0/card0-DP-1/edid
+
+# Find the `EXPECTED_MONITOR_ATTACHED` using `parse-edid < /path/to/edid/file` and enter the name
+# export EXPECTED_MONITOR_ATTACHED="DELL ABC123"
+
+./target/debug/ha-events

@@ -1,0 +1,9 @@
+[Unit]
+Description=Home Assistant PC events agent
+
+[Service]
+Type=simple
+ExecStart=/path/to/ha-events/start-ha-events.sh
+
+[Install]
+WantedBy=multi-user.target
