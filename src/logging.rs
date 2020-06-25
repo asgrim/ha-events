@@ -6,7 +6,7 @@ use log4rs::config::{Appender, Config, Root};
 pub fn setup_logging() {
     let logfile = FileAppender::builder()
         .encoder(Box::new(PatternEncoder::new("{d(%Y-%m-%d %H:%M:%S %Z)(utc)} [{l}] - {m}\n")))
-        .build("output.log")
+        .build("/tmp/ha-events.log")
         .expect("Failed to set up log file");
 
     let config = Config::builder()

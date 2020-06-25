@@ -1,39 +1,56 @@
 use crate::ha_webhook;
-use std::io::{BufRead, BufReader};
-use std::process::{Command, Stdio};
+use dbus::blocking::Connection;
+use std::time::Duration;
+use dbus::message::MatchRule;
+use dbus::MessageType;
+use std::thread;
+use dbus::arg::{Variant, RefArg};
+use std::collections::HashMap;
 
 pub fn watch_for_screen_lock_unlock() {
-    let process = match Command::new("/usr/bin/dbus-monitor")
-        .arg("--session")
-        .arg("type='signal',interface='org.gnome.ScreenSaver'")
-        .stdin(Stdio::null())
-        .stdout(Stdio::piped())
-        .spawn()
-    {
-        Err(why) => {
-            error!("Could not spawn dbus-monitor process: {}", why);
-            panic!("could not spawn dbus-monitor: {}", why);
-        },
-        Ok(process) => {
-            info!("Watching dbus-monitor.");
-            process
-        },
+    let conn = loop {
+        match Connection::new_system() {
+            Ok(c) => break c,
+            Err(e) => {
+                warn!("ha-events could not connect to dbus: {}", e);
+                thread::sleep(Duration::from_secs(5));
+            }
+        };
     };
 
-    let stdout = process.stdout.unwrap();
-    let stdout_reader = BufReader::new(stdout);
-    let stdout_lines = stdout_reader.lines();
+    // Second create a rule to match messages we want to receive; in this example we add no
+    // further requirements, so all messages will match
+    let mut rule = MatchRule::new();
+    rule.msg_type = Some(MessageType::Signal);
+    rule.interface = Some("org.freedesktop.DBus.Properties".into());
+    rule.path = Some("/org/freedesktop/login1".into());
+    rule.eavesdrop = true;
 
-    for line in stdout_lines {
-        let unwrapped_line = line.unwrap();
+    // Start matching
+    conn.add_match(rule, |_: (), _, msg| {
+        let mut iter = msg.iter_init();
+        if iter.next() {
+            let z: HashMap<String, Variant<Box<dyn RefArg>>> = iter.get().unwrap();
+            match z.get_key_value("IdleHint") {
+                None => (),
+                Some(t) => {
+                    let tvariant = t.1;
+                    let value = &tvariant.0;
 
-        if unwrapped_line.contains("boolean true") {
-            ha_webhook::screen_lock();
-            continue;
+                    if let Some(i) = value.as_i64() {
+                        if i.eq(&i64::from(1)) {
+                            ha_webhook::screen_lock();
+                        }
+                        if i.eq(&i64::from(0)) {
+                            ha_webhook::screen_unlock();
+                        }
+                    }
+                }
+            };
         }
-        if unwrapped_line.contains("boolean false") {
-            ha_webhook::screen_unlock();
-            continue;
-        }
-    }
+        true
+    }).expect("add_match failed");
+
+    info!("Connected to dbus.");
+    loop { conn.process(Duration::from_millis(1000)).unwrap(); };
 }
