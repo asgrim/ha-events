@@ -1,5 +1,6 @@
 [Unit]
 Description=Home Assistant PC events agent
+After=network-online.target
 
 [Service]
 Type=simple

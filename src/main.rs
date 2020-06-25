@@ -1,3 +1,4 @@
+mod connectivity_check;
 mod ctrl_c;
 mod dbus_monitor;
 mod docking_check;
@@ -16,6 +17,8 @@ fn main() {
         warn!("Exiting: did not detect the correct external monitor; not docked correctly");
         return;
     }
+
+    connectivity_check::wait_for_connectivity();
 
     ctrl_c::set_handler();
     ha_webhook::turn_on();

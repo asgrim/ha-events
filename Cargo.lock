@@ -298,6 +298,7 @@ dependencies = [
  "edid",
  "log",
  "log4rs",
+ "online",
  "reqwest",
 ]
 
@@ -689,6 +690,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0b631f7e854af39a1739f401cf34a8a013dfe09eac4fa4dba91e9768bd28168d"
 
 [[package]]
+name = "online"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "848cc118fc912a01b072fff732fd8c12c58ed779b3d537cf9ce89e50fab69191"
+dependencies = [
+ "simple-error",
+]
+
+[[package]]
 name = "openssl"
 version = "0.10.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1055,6 +1065,12 @@ dependencies = [
  "serde",
  "yaml-rust",
 ]
+
+[[package]]
+name = "simple-error"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "339844c9af2d844b9230bb28e8f819a7790cbf20a29b5cbd2b59916a03a1ef51"
 
 [[package]]
 name = "slab"
